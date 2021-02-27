@@ -19,11 +19,23 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler{
 	public ResponseEntity<Object> handleAnyException(Exception ex, WebRequest request){
 		
 		//Validate localizedMessage which can be null.
-		String errorMessageLocalized = ex.getLocalizedMessage() == null? ex.toString(): ex.getLocalizedMessage();
+		String errorMessageLocalized = ex.getLocalizedMessage();
+		if(errorMessageLocalized == null) errorMessageLocalized = ex.toString();
 		
 		ErrorMessage errorMessage = new ErrorMessage(new Date(), errorMessageLocalized);
 		
 		return new ResponseEntity<>(
 				errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(value = {NullPointerException.class})
+	public ResponseEntity<Object>handleNullPointerException(NullPointerException ex, WebRequest request){
+		// Validate localizedMessage which can be null.
+		String errorMessageLocalized = ex.getLocalizedMessage();
+		if(errorMessageLocalized == null) errorMessageLocalized = ex.toString();
+		
+		ErrorMessage errorMessage = new ErrorMessage(new Date(), errorMessageLocalized);
+
+		return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
